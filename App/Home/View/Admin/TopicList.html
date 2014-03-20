@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="all" />
+    <meta name="author" content="Tencent" />
+    <meta name="Copyright" content="Tencent" />
+    <meta name="Description" content="微社区" />
+    <meta name="Keywords" content="微社区、微生活" />
+    <title>微社区后台</title>
+    <link rel="stylesheet" href="__PUBLIC__/css/style.css">
+	<js href="__PUBLIC__/js/jquery.min.js" />	
+	<js href="__PUBLIC__/JS/XY_Dialog/XY_Base.js" />
+</head>
+<body>
+<div class="wrapper">
+    <div class="header">
+        <div class="headerCon">
+            <a href="javascript:;" class="logo db fl ht" title="微社区">微社区</a>
+            <ul class="navMenu fl">
+                <li><a href="#" class="spr on" >首页</a></li>
+                <li><a href="#">管理中心</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="wp mtm nvt title pr" id="topbar">
+    </div>
+    <div class="container">
+        <div id="mainContainer" class="main">
+			<select name="List" class="List">
+			<volist name="list" id="vo" key="k">
+				<option <eq name="Think.session.AdClass" value="$k">selected</eq> value="{$vo.id}" >{$vo.name}</option>
+			</volist>
+			</select>
+		<div class="topicBox">
+			<div class="topicList">
+			<ul id="topicItems">    
+			<volist name="data" id="vo1">
+				<li id="{$vo1.id}"> 
+					<div class="editBtn fl">
+					<a href="javascript:;" title="" class="delBtn db spr ht" tid="{$vo1.id}">删除帖子</a>
+					</div> 
+					<div class="topicCon fr pr"> 
+						<a href="javascript:;" class="avatar"><img src="{$vo1.url}" class="personImg pa" width="40" height="40" alt="头像"></a> 
+						<p class="titDate"> 
+						<span class="db fl author">
+						<strong>{$vo1.name}</strong>
+						</span> 
+						<span class="db f12 fr"><em>{$vo1.addtime}</em></span> </p> 
+						<p class="htmlEdit"><a href="javascript:;" title="">{$vo1.content}</a></p>  
+						<p class="replyComment "> 
+							<span class="db fl pr">
+								<a class="replynum" href="javascript:;" title=""><i class="bubble dib spr mprevise"></i>{$vo1.Praise}</a> 
+								<a class="zannum" href="javascript:;" title=""><i class="thumb dib spr mprevise"></i>{$vo1.ReplayCount}</a> 
+							</span> 
+							<span class="db fr threadOp" style="display: block;"> 
+							<a href="__CONTROLLER__/show/id/{$vo1.id}" title="" class="editThread" tid="{$vo1.id}">详细</a>   				
+							</span> 
+						</p> 
+					</div> 
+				</li>   
+			</volist>
+			</ul>
+			{$page}
+			</div>
+		</div>
+		</div>
+        <div class="appl">
+			<li><dd><a href="__CONTROLLER__/index">版面管理</a></dd></li>
+			<li><dd class="on">帖子管理</dd></li>
+		</div>
+    </div>
+    <div class="footer">微策划公司 版权所有</div>
+</div>
+<script type="text/javascript">
+$('.delBtn').live('click',function(){
+	var id1 = $(this).attr('tid');
+	if(confirm('你确定要删除此文字')){
+		$.post('__CONTROLLER__/DelTopic',
+		{
+		id : id1
+		},
+		function(){
+			$('li#'+id1).html('');
+			$('li#'+id1).remove();
+		})
+	}else{
+	}
+});
+$('.List').live('change',function(){
+	var class1 = $(this).val();
+	$.post('__CONTROLLER__/ChangeClass',
+	{
+	id : class1
+	},
+	function(){
+		window.location.reload(); 
+	})
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html>
+<head time='1395018823'>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="baidu-tc-cerfication" content="5f496895eb9bff9ec4db4512a7e4e95c" />
+    <meta name="description" content="手Q最火爆的内涵部落，分享最真实、最具内涵漫画、邪恶漫画、搞笑图片、糗事、恶搞、雷人语录，让你看了之后根本把持不住，我们都爱内涵部落。"/>
+    <meta name="keywords" content="" />
+    <link rel="shortcut icon" href="http://dzqun.gtimg.cn/quan/images/favicon.ico"/>
+    <title>{$Think.session.classname}</title>    
+	<link rel="stylesheet" href="__PUBLIC__/css/common.css">	
+	<js href="__PUBLIC__/js/jquery.min.js" />	
+	<js href="__PUBLIC__/JS/XY_Dialog/XY_Base.js" />
+</head>
+<body>
+<div class="warp" onselectstart="return false;">
+        <div class="header h_b">
+        <i class="topicLogo perLogo fl db"><img src="{$Think.session.logo}" class="bImg" width="38" height="38"></i>
+        <h3 class="backflow">{$Think.session.classname}</h3>
+        <span class="incoAnswer db return"></span>
+    </div>
+
+    <div class="container">
+        <div class="topicBox">
+            <div class="topicCon">
+                    <p class="personImgDate">
+                        <span class="perImg db">
+                            <img src="{$Topic.url}" class="bImg" width="38" height="38" alt="头像">
+                            <i class="admin"></i>
+                            <span class="timeT">{$Topic.name}<i>{$Topic.addtime}</i></span>
+                        </span>
+                        <span class="perDate db">
+                                                                                </span>
+                    </p>
+                    <div class="detailCon">
+                        <p>{$Topic.content}</p>
+                        <a href="javascript:;" class="viewBtn db fl" style="display:none;">全文</a>
+                        <span class="replyShare db fr">
+							<a href="javascript:;" class="like" tId="{$Topic.id}"><i class="<empty name="Topic.IsPraise">noPraise<else />praise</empty>"></i>{$Topic.Praise}</a>
+                        </span>
+						<div class="slideBox">
+                            <div class="slideBoxWrapper" style="width: 100%;  position: relative;  margin: 10px 0 0; ">
+                            <ul>
+								<volist name="Topic.Pic" id="vo1">
+									<li><a href="{$vo1.url}"><img src="{$vo1.thumb_url}"></a></li>
+								</volist>
+                            </ul>
+                            </div>
+                            <span class="pageNum db" style="top:20px;display:none;">{$Topic.count}张</span>
+                        </div>
+                    </div>
+            </div>
+            <div class="topicList">
+                <ul id="replyList_{$Topic.id}"> 
+					<volist name="Topic.replay" id="vo2">
+						<li><img src="{$vo2.url}" class="sImg db fl" width="25" height="25" alt="头像"><a href="javascript:;" author="{$vo2.name1}" tid="{$Topic.id}" uid="{$vo2.uid}" class="sW fl"><span>{$vo2.name}：</span>
+							{$vo2.content}</a></li>	
+					</volist>
+                </ul>
+                            </div>
+        </div>
+    </div>
+</div>
+<!--底部bar-->
+<div class="bottomBar">
+    <div class="bottomBarCon">
+        <a href="javascript:;" class="backBtn" id="goback" onclick="location.href=document.referrer;"><i class="incoAnswer back db"></i></a>
+                <a href="javascript:;" class="replyBtn db threadReply" tid="{$Topic.id}"><i class="incoR"></i>回复</a>
+    <i class="db numP" id="navMsgNum" style="display:none;"></i>
+    </a>
+<div id="goTop" class="floatLayer db" ><a href="javascript:;" class="upBtn db"></a></div>
+<script type="text/javascript">
+Util.loadJS("XY_Dialog.js",function(){
+	$('.like').live('click',function(){
+		if(CheckLogin() != false){
+			var tid = $(this).attr('tId');
+			if($(this).find("i").attr('class') == "noPraise"){ //更具显示的标签判断是否ajax点赞
+				$.ajax({
+				type: "post",
+				url: "__CONTROLLER__/ajaxPraise",
+				data:"tid="+tid,
+				success: function(data){
+					$(".like[tId="+tid+"]").html("<i class=\"praise\"></i>"+data+""); //改变赞的样式和数目
+					
+				}
+				});
+			}
+		}	
+	});
+	$('.threadReply').live('click',function(){
+		if(CheckLogin() != false){
+			Util.Dialog({
+			title : "纯文本内容",
+			boxID: "FormDialog",
+			showtitle : false,
+			width : 350,
+			height : 200,
+			fixed: false,
+			content : "text:<div class=\"popLayer\" style=\"width:86%\"><form method=\"post\" id=\"formA\" action=\"__CONTROLLER__/replay\"> <input type=\"hidden\" id=\"tid\" name=\"tid\" value=\""+$(this).attr('tID')+"\"><input type=\"hidden\" id=\"uid\" name=\"uid\" value=\"{$Think.session.id}\"><div class=\"sendBorder\"><textarea id=\"content\" name=\"content\" cols=\"\" rows=\"\" class=\"sInput\" placeholder=\"回两句吧...\"></textarea></div><div class=\"sendOperate\"><div class=\"operBtn db fr\"><span class=\"pText\" id=\"pText\">140</span><a href=\"javascript:;\" id=\"cBtn\" class=\"cancelBtn db close\" title=\"\" onclick=\"closeDialog()\">取消</a><a href=\"javascript:;\" id=\"comBtn\" class=\"sendBtn c1 db\" onclick=\"ajaxSubmit()\">发送</a></span></div></form></div>"
+			});
+		}
+	});
+	
+	$('.sW').live('click',function(){
+		if(CheckLogin() != false){
+			Util.Dialog({
+			title : "纯文本内容",
+			boxID: "FormDialog",
+			showtitle : false,
+			width : 350,
+			height : 200,
+			fixed: false,
+			content : "text:<div class=\"popLayer\" style=\"width:86%\"><form method=\"post\" id=\"formA\" action=\"__CONTROLLER__/replay\"><input type=\"hidden\" id=\"tid\" name=\"tid\" value=\""+$(this).attr('tID')+"\"><input type=\"hidden\" id=\"rid\" name=\"rid\" value=\""+$(this).attr('uid')+"\"><input type=\"hidden\" id=\"uid\" name=\"uid\" value=\"{$Think.session.id}\"><div class=\"sendBorder\"><textarea id=\"content\" name=\"content\" cols=\"\" rows=\"\" class=\"sInput\" placeholder=\"回复 "+$(this).attr('author')+"\"></textarea></div><div class=\"sendOperate\"><div class=\"operBtn db fr\"><span class=\"pText\" id=\"pText\">140</span><a href=\"javascript:;\" id=\"cBtn\" class=\"cancelBtn db close\" title=\"\" onclick=\"closeDialog()\">取消</a><a href=\"javascript:;\" id=\"comBtn\" class=\"sendBtn c1 db\" onclick=\"ajaxSubmit()\">发送</a></span></div></form></div>"
+			});
+		}
+	});
+});
+var currentPage; 
+	function closeDialog(){
+	Util.Dialog.close("FormDialog");
+	}
+	
+	function CheckLogin(){
+		var a = "{$Think.session.id}";
+		if( a == ""){
+			if(confirm("您不是会员卡会员不能回复和点赞点击确定添加会员")){
+				self.location='http://wxapi.weicehua.net/index.php?g=Wap&m=Card&a=get_card&token={$Think.session.token}&wecha_id={$Think.session.wecha_id}';
+				return false;
+			}else{
+			return false;
+			}
+		}
+	}
+	
+	function ajaxSubmit(){	
+	var tid = $("#tid").val();
+	var cont = $("#content").val();
+	var uid = $("#uid").val();
+	var rid = $("#rid").val();
+	if(cont ==""){
+		alert(rid);
+	}else{		
+		$.ajax({
+			type: "post",
+			url: "__CONTROLLER__/ajaxreplay1",
+			data:"tid="+tid+"&cont="+cont+"&uid="+uid+"&rid="+rid,
+			success: function(data){
+				$("#replyList_"+tid).html(data);
+		  }
+		  });	
+		closeDialog();
+		currentPage = 1; 
+		}
+	}
+	
+//图片触摸滑动
+	var j, i, d, b, t, s, m, e = 0;
+	$(".container").on("touchstart", ".slideBoxWrapper", function(w) {
+		j = d = w.originalEvent.touches[0].pageX;
+		i = b = w.originalEvent.touches[0].pageY;
+		m = e		
+	});
+	var k = null;
+	$(".container").on("touchmove", ".slideBoxWrapper", function(y) {
+		d = y.originalEvent.touches[0].pageX;
+		b = y.originalEvent.touches[0].pageY;
+		t = d - j;
+		s = b - i;
+		if (Math.abs(s) < Math.abs(t)) {
+			if (y.preventDefault) {
+				y.preventDefault()
+			}
+		} else {
+			return true
+		}
+		var x = $(this);
+		e = m + parseInt(t);
+		if (e > 0) {
+			e = 0;
+			t = 0;
+			s = 0
+		}
+		var w = -1 * (this.scrollWidth - $(this).parent().width());
+		if (this.scrollWidth >= $(this).parent().width() && e < w) {
+			e = w;
+			t = 0;
+			s = 0
+		}		
+		$(this).css("left", e)
+	});
+	
+	$(".slideBox").each(function() {
+		var f = $(this).find("li");
+		var c = 0;
+		for (var b = 0; b < f.length; b++) {
+			c += $(f[b]).width()
+		}
+		if ($(this).width() < c) {
+			$(this).find(".pageNum").show()
+		}
+	});	
+
+//滑动加载
+jQuery(function($) {
+  currentPage = 1; 
+  var scroll;
+  var loadIMG = function() {
+	  var url = "__CONTROLLER__/ajaxloadreplay1/tid/{$Topic.id}/page/"+currentPage+"";
+	  $.ajax({
+		type: "POST",
+		url: url
+	  }).done(function( msg ) {
+		  if (msg=='0'){
+			return false;
+		  }
+		  else
+		  {
+			$('#replyList_{$Topic.id}').append(msg);
+			 console.log(currentPage);
+			//swipeboxInstance.refresh();
+		  }
+	  });
+  };
+  $(window).scroll( function() {
+	 scroll = $(document).scrollTop();
+	 sessionStorage.setItem("location",scroll)
+	if ($(document).scrollTop() >= $(document).height()-$(window).height()) {
+	  currentPage++;
+	  loadIMG();
+	}
+
+  })
+
+  $( document ).ready(function(){
+	if(sessionStorage.getItem("location")){
+	  $(document).scrollTop(sessionStorage.getItem("location"));
+	}
+  })
+
+})
+</script>
+</body>
+</html>
